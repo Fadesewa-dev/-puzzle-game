@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Simple Puzzle Game</title>
+        <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+        <link rel="stylesheet" href="https://code.jquery.com/ui/1.14.1/themes/base/jquery-ui.css">
+       
+        <style>
+         /* General Styles */
+            body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+            }
+
+            /* Typing Animation */
+            #typing {
+            font-size: 40px;
+            font-weight: bold;
+            color: rgba(255, 255, 255, 0.5);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            animation: fadeIn 2s ease-in-out;
+            
+            }
+
+            /* Heart Icon */
+            p {
+            font-size: 20px;
+            color: red;
+            }
+            #puz {
+            width: 20%;
+            height: 20%;
+            
+            padding-left: 100px;
+            }
+
+            /* Timer & Message */
+            #Message {
+            font-size: 20px;
+            color: #fff;
+            border-radius: 5px;
+            display: inline-block;
+            padding-right:20% ;
+            }
+
+            /* Buttons */
+            button {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: 0.3s ease-in-out;
+            margin: 5px;
+            }
+
+            button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            }
+
+            button:hover {
+            background: #e63946;
+            }
+
+            /* Puzzle Container */
+            #sortable {
+            width: 310px;
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            gap: 5px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            margin: 20px auto;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+            }
+
+            /* Puzzle Pieces */
+            .puzzle-piece {
+            width: 100px;
+            height: 100px;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.2s;
+            cursor: pointer;
+            }
+
+            .puzzle-piece img {
+            width: 100%;
+            height: 100%;
+            border-radius: 5px;
+            object-fit: cover;
+            }
+
+            /*Hover Effect */
+            .puzzle-piece:hover {
+            transform: scale(1.1);
+            }      
+
+            /*Empty Piece */
+            .puzzle-piece.empty {
+            background: rgba(255, 255, 255, 0.5);
+            box-shadow: none;
+            cursor: default;
+            }
+
+            /*Keyframe Animations */
+            @keyframes fadeIn {
+            from {
+            opacity: 0;
+            }
+            to {
+            opacity:1;
+            }
+            }
+
+        </style>
+    </head>
+
+
+    <body>
+        <h1 id="typing"></h1><span>
+             
+            <img id="puz" align="left" src="image/main.jpg">
+
+                <div class="project_container">
+                
+                </div>
+                <div id="timer" align="center">Time:0</div>
+                <button id="startButton">Start Timer</button>
+                <button id="stopButton" disabled>Stop Timer</button>
+                <div id="Message"></div>
+                
+        <ul id="sortable">
+            <li class="puzzle-piece" ><img src="image/puzzle2.jpg"></li>
+            <li class="puzzle-piece" ><img src="image/puzzle9.jpg"></li>
+            <li class="puzzle-piece" ><img src="image/puzzle4.jpg"></li>
+            <li class="puzzle-piece" ><img src="image/puzzle3.jpg"></li>
+            <li class="puzzle-piece" ><img src="image/puzzle6.jpg"></li>
+            <li class="puzzle-piece" ><img src="image/puzzle5.jpg"></li>
+            <li class="puzzle-piece"><img src="image/puzzle7.jpg"></li>
+            <li class="puzzle-piece"><img src="image/puzzle1.jpg"></li>
+            <li class="puzzle-piece"><img src="image/puzzle8.jpg"></li>
+            <li class="puzzle-piece empty"></li> <!-- Empty space -->
+        </ul>
+        
+
+        
+        <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+        <script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
+        <script type="text/javaScript">
+        $( function() {
+        $( "#sortable" ).sortable();
+        $( "#sortable" ).disableSelection();
+        });
+        $(document).ready(function(){
+        var text = "Sortable Puzzle Game";
+        var index = 0;
+
+        function typeText() { //for Sortable
+        if (index < text.length) {
+        $("#typing").append(text[index]);
+        index++;
+        setTimeout(typeText, 500);
+        }
+        }
+        typeText();
+        });
+       
+       
+        let time = 0;
+        let timerInterval;
+        let gameWon = false;
+
+        $(document).ready(function() {
+        function startTimer() {
+        $('#startButton').prop('disabled', true);
+        $('#stopButton').prop('disabled', false);
+        $('#Message').hide().text('');
+        time = 0;
+        gameWon = false;
+
+        timerInterval = setInterval(function() {
+        time++;
+        $('#timer').text('Time: ' + time);
+
+        // If time reaches 60, display "You Lose!"
+        if (time === 20) {
+        stopTimer();
+        $('#Message').text('You Lose!').css('color', 'red').fadeIn();
+        }
+        }, 3000);
+        }
+
+        function stopTimer() {
+        clearInterval(timerInterval);
+        $('#stopButton').prop('disabled', true);
+        $('#startButton').prop('disabled', false);
+        }
+
+        function showWinMessage() {
+        if (!gameWon && time < 60) {
+        gameWon = true;
+        stopTimer();
+        $('#Message').text('Congratulations! You Won!').css('color', 'green').fadeIn();
+        }
+        }
+
+        $('#startButton').click(function() {
+        gameWon = false;
+        startTimer();
+        });
+
+        $('#stopButton').click(function() {
+        stopTimer();
+        if (time < 60) {
+        showWinMessage();
+        }
+        });
+
+        // ✅ Detect when the puzzle is arranged correctly (after sorting)
+        $("#sortable").sortable({
+        update: function() {
+        if (isPuzzleSolved()) {
+        showWinMessage(); // Auto-show win message when solved
+        }
+        }
+        });
+
+        // ✅ Function to check if the puzzle is arranged correctly
+        function isPuzzleSolved() {
+        let correctOrder = [
+        "puzzle1.jpg", "puzzle2.jpg", "puzzle3.jpg",
+        "puzzle4.jpg", "puzzle5.jpg", "puzzle6.jpg",
+        "puzzle7.jpg", "puzzle8.jpg", "puzzle9.jpg"
+        ];
+
+        let currentOrder = $("#sortable .puzzle-piece img").map(function() {
+        return $(this).attr("src") ? $(this).attr("src").split("/").pop() : ""; // Get only the file name
+        }).get();
+
+        return JSON.stringify(correctOrder) === JSON.stringify(currentOrder);
+        }
+        });
+       
+    </script>
+
+    </body>
+</html>
